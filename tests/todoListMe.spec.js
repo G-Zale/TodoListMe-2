@@ -181,6 +181,25 @@ test.describe('ListSection', () => {
     await app.todoSection.expectTodoVisible('Alpha task');
   });
 
+  test('adds new category and moves list into it', async ({ page }) => {
+  const app = new HomePage(page);
+  await app.open();
+
+  await app.listManager.createCategory('Work');
+  await app.listManager.expectCategoryName('Work');
+
+  await app.listManager.createList('List A');
+  await app.listManager.expectListVisible('List A');
+
+  await app.listManager.openList('List A');
+  await app.todoSection.addTodo('Alpha task');
+  await app.todoSection.expectTodoVisible('Alpha task');
+
+  await app.listManager.moveListToCategory('List A', 'Work');
+
+  await app.listManager.expectListInsideCategory('List A', 'Work');
+});
+
     test('user workflow scenario', async ({ page }) => {
     const app = new HomePage(page);
     await app.open();
