@@ -122,22 +122,7 @@ test.describe('TodoSection', () => {
     expect(sortTitle).toBe('Sorting items normally');
   });
 
-  test('user workflow scenario', async ({ page }) => {
-    const app = new HomePage(page);
-    await app.open();
 
-    await app.listManager.createList('Work');
-    await app.listManager.openList('Work');
-
-    await app.todoSection.addTodo('Alpha task');
-    await app.todoSection.addTodo('Bravo task');
-
-    await app.todoSection.completeTodo('Alpha task');
-    await app.todoSection.moveTodoToTomorrow('Bravo task');
-
-    await app.todoSection.expectDoneVisible('Alpha task');
-    await app.todoSection.expectTomorrowContains('Bravo task');
-  });
 
   test('persists todos after reload', async ({ page }) => {
     const app = new HomePage(page);
@@ -194,4 +179,22 @@ test.describe('ListSection', () => {
     await app.listManager.openList('List A');
     await app.todoSection.expectTodoVisible('Alpha task');
   });
+
+    test('user workflow scenario', async ({ page }) => {
+    const app = new HomePage(page);
+    await app.open();
+
+    await app.listManager.createList('Work');
+    await app.listManager.openList('Work');
+
+    await app.todoSection.addTodo('Alpha task');
+    await app.todoSection.addTodo('Bravo task');
+
+    await app.todoSection.completeTodo('Alpha task');
+    await app.todoSection.moveTodoToTomorrow('Bravo task');
+
+    await app.todoSection.expectDoneVisible('Alpha task');
+    await app.todoSection.expectTomorrowContains('Bravo task');
+  });
+  
 });
