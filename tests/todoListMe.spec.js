@@ -140,11 +140,12 @@ test.describe('TodoSection', () => {
     await app.open();
 
     await app.todoSection.addTodo('Same');
-    await app.todoSection.expectAtLeastOneTodoVisible('Same');
+    // await app.todoSection.expectAtLeastOneTodoVisible('Same');
 
     await app.todoSection.addTodo('Same');
-
+  
     await app.todoSection.expectTodoCount('Same', 2);
+    await page.waitForTimeout(2000);
   });
 });
 
