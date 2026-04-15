@@ -4,19 +4,26 @@ export class ListSection {
   constructor(page) {
     this.page = page;
 
+    // Containers
+    this.listsContainer = page.locator('#lists');
+    this.categoriesContainer = page.locator('#mycategories');
+
+    // Buttons
     this.addListButton = page.locator('#addlist');
-    this.inlineEditorInput = page.locator('#updatebox');
     this.addCategoryButton = page.locator('#adddivider');
 
+    // Inputs
+    this.inlineEditorInput = page.locator('#updatebox');
   }
 
+  // ━━━━━━━ HELPERS ━━━━━━━
 
   list(name) {
     return this.page.locator('span.listname', { hasText: name });
   }
 
   listRow(name) {
-    return this.page.locator('#lists li.normallist').filter({
+    return this.listsContainer.locator('li.normallist').filter({
       has: this.page.locator('.listname', {
         hasText: name,
         exact: true
@@ -27,6 +34,16 @@ export class ListSection {
   listName(name) {
     return this.listRow(name).locator('.listname');
   }
+
+  category(name) {
+    return this.categoriesContainer.locator('li', { hasText: name });
+  }
+
+  categoryContainer(name) {
+    return this.category(name).locator('.categorycontainer');
+  }
+
+  // ━━━━━━━ ACTIONS ━━━━━━━
 
   async createList(name) {
     await this.addListButton.click();
@@ -55,6 +72,20 @@ export class ListSection {
     await this.listName(name).click();
   }
 
+  async createCategory(name) {
+    await this.addCategoryButton.click();
+    await this.inlineEditorInput.fill(name);
+    await this.inlineEditorInput.press('Enter');
+  }
+
+  async moveListToCategory(listName, categoryName) {
+    const list = this.listRow(listName);
+    const category = this.categoryContainer(categoryName);
+
+    await list.dragTo(category);
+  }
+
+  // ━━━━━━━ ASSERTIONS ━━━━━━━
 
   async expectListVisible(name) {
     await expect(this.listName(name)).toBeVisible();
@@ -63,37 +94,16 @@ export class ListSection {
   async expectListMissing(name) {
     await expect(this.listName(name)).toHaveCount(0);
   }
-category(name) {
-  return this.page.locator('#mycategories li', {
-    hasText: name
-  });
-}
-  async createCategory(name) {
-  await this.addCategoryButton.click();
-  await this.inlineEditorInput.fill(name);
-  await this.inlineEditorInput.press('Enter');
-}
 
-async expectCategoryName(name) {
-  await expect(this.category(name)).toBeVisible();
-}
+  async expectCategoryName(name) {
+    await expect(this.category(name)).toBeVisible();
+  }
 
-categoryContainer(name) {
-  return this.category(name).locator('.categorycontainer');
-}
-async moveListToCategory(listName, categoryName) {
-  const list = this.listRow(listName);
-  const category = this.categoryContainer(categoryName);
+  async expectListInsideCategory(listName, categoryName) {
+    const category = this.categoryContainer(categoryName);
 
-  await list.dragTo(category);
-}
-async expectListInsideCategory(listName, categoryName) {
-  const category = this.categoryContainer(categoryName);
-
-  await expect(category.locator('li.normallist').filter({
-      has: this.page.locator('.listname', {hasText: listName, exact: true }),
-    })
-  ).toHaveCount(1);
-}
-
+    await expect(category.locator('li.normallist').filter({
+      has: this.page.locator('.listname', { hasText: listName, exact: true }),
+    })).toHaveCount(1);
+  }
 }
