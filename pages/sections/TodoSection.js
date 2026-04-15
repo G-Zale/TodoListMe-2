@@ -26,7 +26,7 @@ export class TodoSection {
     return this.firstTodoItem().locator('span');
   }
 
-  todoItem(text) {
+ todoItem (text) {
     return this.page.locator('#mytodos li', { hasText: text });
   }
 
@@ -35,17 +35,20 @@ export class TodoSection {
   }
 
 todoByText(text) {
-  return this.page.locator('#mytodos li', { hasText: text });
+  return this.page.locator('#mytodos li', {  hasText: new RegExp(`^${text}$`)  });
+    
 }
 
 todosByText(text) {
-  return this.todoByText(text);
+  return this.page.locator('#mytodos li').filter({
+    has: this.page.locator(`text="${text}"`)
+  });
 }
-
 async expectTodoCount(text, count) {
   await expect(this.todosByText(text)).toHaveCount(count);
 
 }
+
 
   async addTodo(text) {
     await this.newTodoInput.fill(text);
@@ -121,9 +124,7 @@ async expectTodoCount(text, count) {
     await expect(this.todoItems.first()).toContainText(text);
   }
 
-  // async expectTodoVisible(text) {
-  //   await expect(this.todoItem(text)).toBeVisible();
-  // }
+ 
   async expectTodoVisible(text) {
   await expect(this.todoByText(text).first()).toBeVisible();
 }
@@ -154,14 +155,6 @@ async expectTodoCount(text, count) {
   const todo = this.todoByText(todoText);
 
   await todo.dragTo(targetListLocator);
-}
-
-async expectTodoCount(text, count) {
-  await expect(this.page.locator('#mytodos li', { hasText: text })).toHaveCount(count);
-}
-
-async expectAtLeastOneTodoVisible(text) {
-  await expect(this.todoByText(text).first()).toBeVisible();
 }
 
 }
